@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta name="author" content="Steven Schubiger">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>Windows 2000: Verzeichnis mittels CLSID "verstecken"</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+      body { background-color:lightgrey;
+             font-family:'Open Sans', sans-serif;
+      }
+      img { border:1px solid black;
+            margin-top:5px;
+      }
+      .center { margin:auto;
+                width:800px;
+      }
+      .step { margin:50px; }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <h2>Windows 2000: Verzeichnis mittels CLSID "verstecken"</h2>
+      <div class="step">
+        <b>Schritt 1:</b> Registry Editor <code>("regedit")</code> &ouml;ffnen.<br>
+        <img src="images/1.jpg" alt="step1">
+      </div>
+      <div class="step">
+        <b>Schritt 2:</b> Nach <code>"Systemsteuerung"</code> suchen.<br>
+        <img src="images/2.jpg" alt="step2">
+      </div>
+      <div class="step">
+        <b>Schritt 3:</b> Die CLSID der Systemsteuerung kopieren.<br>
+        <img src="images/3.jpg" alt="step3">
+      </div>
+      <div class="step">
+        <b>Schritt 4:</b> Die CLSID dem zu versteckenden Verzeichnis anf&uuml;gen (getrennt durch <code>'.'</code>).<br>
+        <img src="images/4.jpg" alt="step4">
+      </div>
+      <div class="step">
+        <b>Schritt 5:</b> Das Verzeichnis erscheint nun als Systemsteuerung.<br>
+        <img src="images/5.jpg" alt="step5">
+      </div>
+      <div class="step">
+        <b>Schritt 6-1:</b> In der Kommandozeile ist die CLSID nach wie vor ersichtlich.<br>
+        <img src="images/6-1.jpg" alt="step6-1">
+      </div>
+      <div class="step">
+        <b>Schritt 6-2:</b> In der Kommandozeile kann der Vorgang auch r&uuml;ckg&auml;ngig gemacht werden.<br>
+        <img src="images/6-2.jpg" alt="step6-2">
+      </div>
+    </div>
+  </body>
+</html>
