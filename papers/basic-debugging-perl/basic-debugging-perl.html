@@ -1,0 +1,186 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Basic Debugging in Perl 5</title><link rel="stylesheet" type="text/css" href="basic-debugging-perl.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article"><div class="titlepage"><div><div><h2 class="title"><a name="id1337"></a>Basic Debugging in Perl 5</h2></div><div><div class="authorgroup"><div class="author"><h3 class="author"><span class="firstname">Steven</span> <span class="surname">Schubiger</span></h3></div></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect1"><a href="#id1338">print statements</a></span></dt><dt><span class="sect1"><a href="#id1339">Data::Dumper</a></span></dt><dt><span class="sect1"><a href="#id1340">built-in debugger alias <span class="command"><strong>-d</strong></span></a></span></dt></dl></div><p>Copyright (c) 2005-2011, 2015-2016, 2024-2025 Steven Schubiger</p><p>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+</p><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1338"></a>print statements</h2></div></div></div><p>
+As the most intuitive debugging facility to the one becoming acquainted with
+Perl will likely be first print statements. Such statements may print either
+simply debugging hints, contents of variables or anything part of a valid print
+expression while the program is being executed. In order to interrupt the
+execution of code (what is commonly known as a breakpoint in "proper"
+debugging) the Perl program may also wait for random input by the user.
+</p><p>
+Imagine we were receiving a result from complex mathematical calculations and
+somehow it failed our expectations; unfortunately, we have already been spending
+time proofreading our code for semantical errors and did not come across any or
+have overlooked their subtle occurrences.
+</p><p>So, let us say, <span class="command"><strong>$result</strong></span> contains one result that failed our expectations.</p><p>By inserting the following statement</p><div class="example"><a name="id1341"></a><p class="title"><b>Example 1. </b></p><div class="example-contents"><pre class="programlisting">
+print "$result\n";
+</pre></div></div><br class="example-break"><p>the value of <span class="command"><strong>$result</strong></span> is printed at runtime with a newline appended.</p><p>
+This may suffice in normal cases where we do not have much data printed, but it will
+fail perhaps if it is vice-versa where the output flow is too fast to be followed
+by the human eye. As previously mentioned, in such cases, we will have to interrupt.
+</p><p>We will extend our single statement to following ones</p><div class="example"><a name="id1342"></a><p class="title"><b>Example 2. </b></p><div class="example-contents"><pre class="programlisting">
+print "$result\n";
+&lt;STDIN&gt;;
+</pre></div></div><br class="example-break"><p>
+<span class="command"><strong>$result</strong></span> is being printed as before, no change introduced here;
+we do interfere now by forcing it to wait for input by the user reading from the
+standard input. This mostly makes sense for interactive terminal uses, but not so
+much for a CGI script, however.
+</p><p>
+An useful and basic feature most debuggers ship with as do most "equivalent" editors
+is marking the line one is stepping at or editing by printing the line number at
+the left. If we would like to emulate this feature, we could use <span class="command"><strong>__LINE__</strong></span>
+(which although is a literal, represents the line number of the source on which it
+occurs).
+</p><div class="example"><a name="id1343"></a><p class="title"><b>Example 3. </b></p><div class="example-contents"><pre class="programlisting">
+print __LINE__ . ":\t$result\n";
+&lt;STDIN&gt;;
+</pre></div></div><br class="example-break"><p>
+The line number followed by a colon will be printed including the interpolated
+variable separated by a tab space.
+</p><p>
+It is common for many compilers to state unambiguously with <span class="command"><strong>&lt;FILE:LINE: error&gt;</strong></span>
+kind of error messages where the programmer has to overlook the source again in case
+of an error.
+</p><p>
+We could emulate this feature by prepending <span class="command"><strong>__FILE__</strong></span>
+(which contains the filename of the current source file being executed).
+</p><div class="example"><a name="id1344"></a><p class="title"><b>Example 4. </b></p><div class="example-contents"><pre class="programlisting">
+print __FILE__ . ':' . __LINE__ . ":\t$result\n";
+&lt;STDIN&gt;;
+</pre></div></div><br class="example-break"><p>
+Noteworthy addition: instead of using <span class="command"><strong>print</strong></span>, there are
+some alternatives which follow below.
+</p><div class="example"><a name="id1345"></a><p class="title"><b>Example 5. </b></p><div class="example-contents"><pre class="programlisting">
+say $result;    # same as: print "$result\n";
+warn $result;   # prints $result as warning to STDERR
+</pre></div></div><br class="example-break"></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1339"></a>Data::Dumper</h2></div></div></div><p>
+Simple print statements may be suitable as long as no complex data structures,
+i.e. nested ones or references are being involved. A disadvantage that goes
+along with such statements is that the source is temporarily being polluted,
+which requires that we either have a backup handy or manually remove the
+statements after debugging with the risk of eventually introducing subtle
+bugs when not all occurrences have been purged.
+</p><p>
+<span class="command"><strong>Data::Dumper</strong></span> has been a core module since the beginnings of Perl
+5 and it stringifies perl data structures for printing as well as for evaling them.
+<span class="command"><strong>Data::Dumper</strong></span> may be used in old-fashioned function exporting way,
+but also in object-oriented one which compared to former one exposes more methods.
+</p><p>The following excerpt loads <span class="command"><strong>Data::Dumper</strong></span> at compile-time
+and prints the result from calling <span class="command"><strong>Dumper($result)</strong></span> to the
+standard output.</p><div class="example"><a name="id1346"></a><p class="title"><b>Example 6. </b></p><div class="example-contents"><pre class="programlisting">
+use Data::Dumper;
+
+...
+
+print Dumper($result);
+</pre></div></div><br class="example-break"><p>Examine the output of a more complex data structure, for example:</p><div class="example"><a name="id1347"></a><p class="title"><b>Example 7. </b></p><div class="example-contents"><pre class="programlisting">
+use Data::Dumper;
+
+...
+
+$results = [ $calc, { result1 =&gt; $calc ** 2, result2 =&gt; $calc * 3 } ];
+
+$d = Data::Dumper-&gt;new($results);
+
+print $d-&gt;Dump;
+</pre></div></div><br class="example-break"></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1340"></a>built-in debugger alias <span class="command"><strong>-d</strong></span></h2></div></div></div><p>
+perl invoked in the command-line with the <span class="command"><strong>-d</strong></span> switch
+will launch the debugger. The most essential command is <span class="command"><strong>h</strong></span>,
+which prints the summary of commands - the equivalent to <span class="command"><strong>--help</strong></span>
+in many programs with gnuish long arguments. <span class="command"><strong>h h</strong></span> lists an even
+more extended summary.
+</p><p>
+It is important to become aware of that the Perl debugger, unlike the GNU
+C debugger (gdb), assumes implicitly a given breakpoint at line 1 regardless
+whether we choose to "step" by saying step <span class="command"><strong>(s)</strong></span> or next
+<span class="command"><strong>(n)</strong></span>. The number in the angle brackets of <span class="command"><strong>__DB&lt;1&gt;_</strong></span>
+does not, as one could be tempted to believe, indicate which line of source we are stepping at:
+it functions as a counter of how many operations have been performed (except <span class="command"><strong>h</strong></span>)
+since start-up.
+</p><p>
+As mentioned above, <span class="command"><strong>s</strong></span> or <span class="command"><strong>n</strong></span> are two variants
+to step within code: former steps one line and enters subroutines (i.e. subs)
+whenever one appears, whereas latter one skips subs by stepping over them.
+</p><div class="example"><a name="id1348"></a><p class="title"><b>Example 8. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ s                     # step line, entering subs
+
+__DB&lt;1&gt;_ n                     # step line, skipping subs
+</pre></div></div><br class="example-break"><p>
+Given that we do approximately know where a flaw was introduced, we can set a breakpoint
+on a line or sub by entering, for example, <span class="command"><strong>b 13</strong></span>, which will break at
+line 13 if we force the debugger to run through the code via <span class="command"><strong>c [ln|sub]</strong></span>
+(continue) until the first breakpoint (e.g. line 13) occurs.
+</p><div class="example"><a name="id1349"></a><p class="title"><b>Example 9. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ b 13                  # set breakpoint at line 13
+
+__DB&lt;1&gt;_ c                     # continue until first breakpoint reached
+</pre></div></div><br class="example-break"><p>
+In case a function or method associated with a foreign class/package gets called,
+it could take up a specific extended amount of time for it to return; <span class="command"><strong>r</strong></span>
+will enforce early returnment from the current subroutine being executed.
+</p><div class="example"><a name="id1350"></a><p class="title"><b>Example 10. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ r                     # return from current subroutine
+</pre></div></div><br class="example-break"><p>
+All these operations would probably not suffice, if we could not examine variables to
+see whether they hold the expected data or not. The most basic operation concerning
+data output is <span class="command"><strong>p expr</strong></span> which will print the expression supplied.
+</p><div class="example"><a name="id1351"></a><p class="title"><b>Example 11. </b></p><div class="example-contents"><pre class="programlisting">
+ __DB&lt;1&gt;_ p $result            # print data in $result
+</pre></div></div><br class="example-break"><p>
+Assuming we would lose orientation where execution has already progressed to, we could regain
+control by either typing <span class="command"><strong>.</strong></span> for the current line or <span class="command"><strong>-</strong></span>
+for the previous one to be displayed. If we choose to view around our current line,
+<span class="command"><strong>v</strong></span> is suited therefore.
+</p><div class="example"><a name="id1352"></a><p class="title"><b>Example 12. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ .                     # print current line
+
+__DB&lt;1&gt;_ -                     # print previous line
+
+__DB&lt;1&gt;_ v                     # view around line
+</pre></div></div><br class="example-break"><p>
+Sometimes it will be of use to have an automatic action executed whenever execution reaches
+a certain line in the source.
+</p><div class="example"><a name="id1353"></a><p class="title"><b>Example 13. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ a 2 p line2           # set action which will be executed before entering line 2
+
+__DB&lt;1&gt;_ A ln|*                # delete an/all action(s)
+
+__DB&lt;1&gt;_ L                     # list all breakpoints, actions, watch expressions
+</pre></div></div><br class="example-break"><p>
+localtime() is context-sensitive: it returns in scalar context the current time in
+readable format, whereas in list context a list is populated with time entries.
+List context evaluation may be enforced by <span class="command"><strong>x</strong></span>.
+</p><div class="example"><a name="id1354"></a><p class="title"><b>Example 14. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ p scalar localtime    # print time in readable format
+
+__DB&lt;1&gt;_ x localtime           # print indexed elements of list returned by localtime
+</pre></div></div><br class="example-break"><p>
+The variables of a certain package can be listed via <span class="command"><strong>V package</strong></span>;
+an optional pattern may be provided to list a selection of variables only. Module
+versions may be displayed by <span class="command"><strong>M</strong></span>. <span class="command"><strong>i class</strong></span>
+allows for insight into the inheritance tree of a class.
+</p><div class="example"><a name="id1355"></a><p class="title"><b>Example 15. </b></p><div class="example-contents"><pre class="programlisting">
+__DB&lt;1&gt;_ V [package]           # list all variables or of a certain package
+
+__DB&lt;1&gt;_ M                     # show module versions
+
+__DB&lt;1&gt;_ i class               # display class inheritance tree
+</pre></div></div><br class="example-break"><p>
+A well-known feature to a frequent shell user is the redo feature which relieves from the
+necessity of retyping previous commands; a command may be redone by typing a <span class="command"><strong>!
+</strong></span> followed by an <span class="command"><strong>integer</strong></span>. A positive integer will be added
+to the start of the history list to pick a command, whereas a negative one has the
+effect of "looking" back.
+</p><div class="example"><a name="id1356"></a><p class="title"><b>Example 16. </b></p><div class="example-contents"><pre class="programlisting">
+ __DB&lt;1&gt;_ !1                   # redo first command
+
+ __DB&lt;1&gt;_ !-1                  # redo last command
+</pre></div></div><br class="example-break"><p>When execution comes to an end, the code may be rerun by <span class="command"><strong>R</strong></span>.</p><div class="example"><a name="id1357"></a><p class="title"><b>Example 17. </b></p><div class="example-contents"><pre class="programlisting">
+ __DB&lt;1&gt;_ R                    # attempt a restart
+</pre></div></div><br class="example-break"></div></div></body></html>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<article>
+
+<articleinfo>
+<title>Basic Debugging in Perl 5</title>
+<authorgroup>
+<author>
+<firstname>Steven</firstname>
+<surname>Schubiger</surname>
+</author>
+</authorgroup>
+</articleinfo>
+
+<para>Copyright (c) 2005-2011, 2015-2016, 2024-2025 Steven Schubiger</para>
+<para>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts.  A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+</para>
+
+<sect1>
+<title>print statements</title>
+
+<para>
+As the most intuitive debugging facility to the one becoming acquainted with
+Perl will likely be first print statements. Such statements may print either
+simply debugging hints, contents of variables or anything part of a valid print
+expression while the program is being executed. In order to interrupt the
+execution of code (what is commonly known as a breakpoint in "proper"
+debugging) the Perl program may also wait for random input by the user.
+</para>
+
+<para>
+Imagine we were receiving a result from complex mathematical calculations and
+somehow it failed our expectations; unfortunately, we have already been spending
+time proofreading our code for semantical errors and did not come across any or
+have overlooked their subtle occurrences.
+</para>
+
+<para>So, let us say, <command>$result</command> contains one result that failed our expectations.</para>
+
+<para>By inserting the following statement</para>
+
+<example>
+<title></title>
+<programlisting>
+print "$result\n";
+</programlisting>
+</example>
+
+<para>the value of <command>$result</command> is printed at runtime with a newline appended.</para>
+
+<para>
+This may suffice in normal cases where we do not have much data printed, but it will
+fail perhaps if it is vice-versa where the output flow is too fast to be followed
+by the human eye. As previously mentioned, in such cases, we will have to interrupt.
+</para>
+
+<para>We will extend our single statement to following ones</para>
+
+<example>
+<title></title>
+<programlisting>
+print "$result\n";
+&lt;STDIN&gt;;
+</programlisting>
+</example>
+
+<para>
+<command>$result</command> is being printed as before, no change introduced here;
+we do interfere now by forcing it to wait for input by the user reading from the
+standard input. This mostly makes sense for interactive terminal uses, but not so
+much for a CGI script, however.
+</para>
+
+<para>
+An useful and basic feature most debuggers ship with as do most "equivalent" editors
+is marking the line one is stepping at or editing by printing the line number at
+the left. If we would like to emulate this feature, we could use <command>__LINE__</command>
+(which although is a literal, represents the line number of the source on which it
+occurs).
+</para>
+
+<example>
+<title></title>
+<programlisting>
+print __LINE__ . ":\t$result\n";
+&lt;STDIN&gt;;
+</programlisting>
+</example>
+
+<para>
+The line number followed by a colon will be printed including the interpolated
+variable separated by a tab space.
+</para>
+
+<para>
+It is common for many compilers to state unambiguously with <command>&lt;FILE:LINE: error&gt;</command>
+kind of error messages where the programmer has to overlook the source again in case
+of an error.
+</para>
+
+<para>
+We could emulate this feature by prepending <command>__FILE__</command>
+(which contains the filename of the current source file being executed).
+</para>
+
+<example>
+<title></title>
+<programlisting>
+print __FILE__ . ':' . __LINE__ . ":\t$result\n";
+&lt;STDIN&gt;;
+</programlisting>
+</example>
+
+<para>
+Noteworthy addition: instead of using <command>print</command>, there are
+some alternatives which follow below.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+say $result;    # same as: print "$result\n";
+warn $result;   # prints $result as warning to STDERR
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1>
+<title>Data::Dumper</title>
+
+<para>
+Simple print statements may be suitable as long as no complex data structures,
+i.e. nested ones or references are being involved. A disadvantage that goes
+along with such statements is that the source is temporarily being polluted,
+which requires that we either have a backup handy or manually remove the
+statements after debugging with the risk of eventually introducing subtle
+bugs when not all occurrences have been purged.
+</para>
+
+<para>
+<command>Data::Dumper</command> has been a core module since the beginnings of Perl
+5 and it stringifies perl data structures for printing as well as for evaling them.
+<command>Data::Dumper</command> may be used in old-fashioned function exporting way,
+but also in object-oriented one which compared to former one exposes more methods.
+</para>
+
+<para>The following excerpt loads <command>Data::Dumper</command> at compile-time
+and prints the result from calling <command>Dumper($result)</command> to the
+standard output.</para>
+
+<example>
+<title></title>
+<programlisting>
+use Data::Dumper;
+
+...
+
+print Dumper($result);
+</programlisting>
+</example>
+
+<para>Examine the output of a more complex data structure, for example:</para>
+
+<example>
+<title></title>
+<programlisting>
+use Data::Dumper;
+
+...
+
+$results = [ $calc, { result1 => $calc ** 2, result2 => $calc * 3 } ];
+
+$d = Data::Dumper->new($results);
+
+print $d->Dump;
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1>
+<title>built-in debugger alias <command>-d</command></title>
+
+<para>
+perl invoked in the command-line with the <command>-d</command> switch
+will launch the debugger. The most essential command is <command>h</command>,
+which prints the summary of commands - the equivalent to <command>--help</command>
+in many programs with gnuish long arguments. <command>h h</command> lists an even
+more extended summary.
+</para>
+
+<para>
+It is important to become aware of that the Perl debugger, unlike the GNU
+C debugger (gdb), assumes implicitly a given breakpoint at line 1 regardless
+whether we choose to "step" by saying step <command>(s)</command> or next
+<command>(n)</command>. The number in the angle brackets of <command>__DB&lt;1&gt;_</command>
+does not, as one could be tempted to believe, indicate which line of source we are stepping at:
+it functions as a counter of how many operations have been performed (except <command>h</command>)
+since start-up.
+</para>
+
+<para>
+As mentioned above, <command>s</command> or <command>n</command> are two variants
+to step within code: former steps one line and enters subroutines (i.e. subs)
+whenever one appears, whereas latter one skips subs by stepping over them.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ s                     # step line, entering subs
+
+__DB&lt;1&gt;_ n                     # step line, skipping subs
+</programlisting>
+</example>
+
+<para>
+Given that we do approximately know where a flaw was introduced, we can set a breakpoint
+on a line or sub by entering, for example, <command>b 13</command>, which will break at
+line 13 if we force the debugger to run through the code via <command>c [ln|sub]</command>
+(continue) until the first breakpoint (e.g. line 13) occurs.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ b 13                  # set breakpoint at line 13
+
+__DB&lt;1&gt;_ c                     # continue until first breakpoint reached
+</programlisting>
+</example>
+
+<para>
+In case a function or method associated with a foreign class/package gets called,
+it could take up a specific extended amount of time for it to return; <command>r</command>
+will enforce early returnment from the current subroutine being executed.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ r                     # return from current subroutine
+</programlisting>
+</example>
+
+<para>
+All these operations would probably not suffice, if we could not examine variables to
+see whether they hold the expected data or not. The most basic operation concerning
+data output is <command>p expr</command> which will print the expression supplied.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+ __DB&lt;1&gt;_ p $result            # print data in $result
+</programlisting>
+</example>
+
+<para>
+Assuming we would lose orientation where execution has already progressed to, we could regain
+control by either typing <command>.</command> for the current line or <command>-</command>
+for the previous one to be displayed. If we choose to view around our current line,
+<command>v</command> is suited therefore.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ .                     # print current line
+
+__DB&lt;1&gt;_ -                     # print previous line
+
+__DB&lt;1&gt;_ v                     # view around line
+</programlisting>
+</example>
+
+<para>
+Sometimes it will be of use to have an automatic action executed whenever execution reaches
+a certain line in the source.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ a 2 p line2           # set action which will be executed before entering line 2
+
+__DB&lt;1&gt;_ A ln|*                # delete an/all action(s)
+
+__DB&lt;1&gt;_ L                     # list all breakpoints, actions, watch expressions
+</programlisting>
+</example>
+
+<para>
+localtime() is context-sensitive: it returns in scalar context the current time in
+readable format, whereas in list context a list is populated with time entries.
+List context evaluation may be enforced by <command>x</command>.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ p scalar localtime    # print time in readable format
+
+__DB&lt;1&gt;_ x localtime           # print indexed elements of list returned by localtime
+</programlisting>
+</example>
+
+<para>
+The variables of a certain package can be listed via <command>V package</command>;
+an optional pattern may be provided to list a selection of variables only. Module
+versions may be displayed by <command>M</command>. <command>i class</command>
+allows for insight into the inheritance tree of a class.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+__DB&lt;1&gt;_ V [package]           # list all variables or of a certain package
+
+__DB&lt;1&gt;_ M                     # show module versions
+
+__DB&lt;1&gt;_ i class               # display class inheritance tree
+</programlisting>
+</example>
+
+<para>
+A well-known feature to a frequent shell user is the redo feature which relieves from the
+necessity of retyping previous commands; a command may be redone by typing a <command>!
+</command> followed by an <command>integer</command>. A positive integer will be added
+to the start of the history list to pick a command, whereas a negative one has the
+effect of "looking" back.
+</para>
+
+<example>
+<title></title>
+<programlisting>
+ __DB&lt;1&gt;_ !1                   # redo first command
+
+ __DB&lt;1&gt;_ !-1                  # redo last command
+</programlisting>
+</example>
+
+<para>When execution comes to an end, the code may be rerun by <command>R</command>.</para>
+
+<example>
+<title></title>
+<programlisting>
+ __DB&lt;1&gt;_ R                    # attempt a restart
+</programlisting>
+</example>
+
+</sect1>
+</article>
