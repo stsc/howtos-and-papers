@@ -1,0 +1,16 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Module::Build::Convert's state of operation</title><link rel="stylesheet" type="text/css" href="../module-build-convert.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><link rel="home" href="index.html" title="Module::Build::Convert"><link rel="up" href="index.html" title="Module::Build::Convert"><link rel="prev" href="ar01s03.html" title='Module::Build distribution "skeleton"'><link rel="next" href="ar01s05.html" title="Data section"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Module::Build::Convert's state of operation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr></table><hr></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1350"></a>Module::Build::Convert's state of operation</h2></div></div></div><p>
+<span class="command"><strong>Module::Build::Convert</strong></span> actually does all the background work and can be safely
+considered the backend, whereas <span class="command"><strong>make2build</strong></span> may be looked at as practicle frontend utility.
+<span class="command"><strong>Module::Build::Convert</strong></span> currently exposes two kinds of operation: static approach &amp; dynamic
+execution. When static approach is being referred, this means ie. that the arguments contained within
+the <code class="filename">Makefile.PL's</code> <span class="command"><strong>WriteMakefile()</strong></span> call are being parsed, whereas dynamic
+execution "runs" the <code class="filename">Makefile.PL</code> and captures the arguments provided to <span class="command"><strong>WriteMakefile()
+</strong></span>.
+</p><p>
+<span class="command"><strong>Module::Build::Convert</strong></span> parses statically by default, because the dynamic execution has the
+downside that code will be interpreted and the interpreted output will be written to the <code class="filename">Build.PL</code>,
+so you have to conclude that the user of the distribution will end up with predefined values computed
+on the authors system; this is something that should surely be avoided whenever possible! If the
+parsing approach fails, ie. loops endlessly on input, <span class="command"><strong>Module::Build::Convert</strong></span> will be "reinited"
+again and dynamic execution of the <code class="filename">Makefile.PL</code> will be performed instead.
+</p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Module::Build distribution "skeleton" </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Data section</td></tr></table></div></body></html>

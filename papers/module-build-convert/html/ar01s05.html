@@ -1,0 +1,86 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Data section</title><link rel="stylesheet" type="text/css" href="../module-build-convert.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><link rel="home" href="index.html" title="Module::Build::Convert"><link rel="up" href="index.html" title="Module::Build::Convert"><link rel="prev" href="ar01s04.html" title="Module::Build::Convert's state of operation"><link rel="next" href="ar01s06.html" title="make2build basic usage"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Data section</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr></table><hr></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1351"></a>Data section</h2></div></div></div><p>
+<span class="command"><strong>Module::Build::Convert</strong></span> comes with a rather huge data section, that contains the argument
+conversion table, default arguments, sorting order, begin &amp; end code. If you wish to change
+this data, you should consider making a <code class="filename">~/.make2buildrc</code> that will consist of this data by
+launching <span class="command"><strong>make2build</strong></span> with the <span class="command"><strong>-rc</strong></span> switch. You shouldn't (!)
+edit the data section within <span class="command"><strong>Module::Build::Convert</strong></span> directly, unless you are sure you want
+to submit a patch.
+</p><p>The sections are enlisted as:</p><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id1339"></a>Argument conversion</h3></div></div></div><p>
+On the left-hand side is the <span class="command"><strong>MakeMaker's</strong></span> argument name, on the right-hand side
+the <span class="command"><strong>Module::Build's</strong></span> equivalent.
+</p><div class="example"><a name="id1352"></a><p class="title"><b>Example 5. </b></p><div class="example-contents"><pre class="programlisting">
+NAME                  module_name
+DISTNAME              dist_name
+ABSTRACT              dist_abstract
+AUTHOR                dist_author
+VERSION               dist_version
+VERSION_FROM          dist_version_from
+PREREQ_PM             requires
+PL_FILES              PL_files
+PM                    pm_files
+MAN1PODS              pod_files
+XS                    xs_files
+INC                   include_dirs
+INSTALLDIRS           installdirs
+DESTDIR               destdir
+CCFLAGS               extra_compiler_flags
+EXTRA_META            meta_add
+SIGN                  sign
+LICENSE               license
+clean.FILES           @add_to_cleanup
+</pre></div></div><br class="example-break"></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id1340"></a>Default arguments</h3></div></div></div><p>Default <span class="command"><strong>Module::Build</strong></span> arguments to be added. Arguments with a leading # are ignored.</p><div class="example"><a name="id1353"></a><p class="title"><b>Example 6. </b></p><div class="example-contents"><pre class="programlisting">
+#build_requires       HASH
+#recommends           HASH
+#conflicts            HASH
+license               unknown
+create_readme         1
+create_makefile_pl    traditional
+</pre></div></div><br class="example-break"></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id1341"></a>Sorting order</h3></div></div></div><p><span class="command"><strong>Module::Build</strong></span> arguments are sorted as enlisted herein.</p><div class="example"><a name="id1354"></a><p class="title"><b>Example 7. </b></p><div class="example-contents"><pre class="programlisting">
+module_name
+dist_name
+dist_abstract
+dist_author
+dist_version
+dist_version_from
+requires
+build_requires
+recommends
+conflicts
+PL_files
+pm_files
+pod_files
+xs_files
+include_dirs
+installdirs
+destdir
+add_to_cleanup
+extra_compiler_flags
+meta_add
+sign
+license
+create_readme
+create_makefile_pl
+</pre></div></div><br class="example-break"></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id1342"></a>Begin code</h3></div></div></div><p>
+Code that preceeds converted <span class="command"><strong>Module::Build</strong></span> arguments.
+<span class="command"><strong>$(UPPERCASE)</strong></span> are stubs being substituted by <span class="command"><strong>Module::Build</strong></span> code.
+</p><div class="example"><a name="id1355"></a><p class="title"><b>Example 8. </b></p><div class="example-contents"><pre class="programlisting">
+use strict;
+use warnings;
+
+use Module::Build;
+
+$MAKECODE
+
+my $b = Module::Build-&gt;new
+$INDENT(
+</pre></div></div><br class="example-break"></div><div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="id1343"></a>End code</h3></div></div></div><p>
+Code that follows converted <span class="command"><strong>Module::Build</strong></span> arguments.
+<span class="command"><strong>$(UPPERCASE)</strong></span> are stubs being substituted by <span class="command"><strong>
+Module::Build</strong></span> code.
+</p><div class="example"><a name="id1356"></a><p class="title"><b>Example 9. </b></p><div class="example-contents"><pre class="programlisting">
+$INDENT);
+
+$b-&gt;create_build_script;
+
+$MAKECODE
+</pre></div></div><br class="example-break"></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Module::Build::Convert's state of operation </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> make2build basic usage</td></tr></table></div></body></html>

@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>make2build basic usage</title><link rel="stylesheet" type="text/css" href="../module-build-convert.css"><meta name="generator" content="DocBook XSL Stylesheets Vsnapshot"><link rel="home" href="index.html" title="Module::Build::Convert"><link rel="up" href="index.html" title="Module::Build::Convert"><link rel="prev" href="ar01s05.html" title="Data section"><link rel="next" href="ar01s07.html" title="make2build switches"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">make2build basic usage</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr></div><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id1357"></a>make2build basic usage</h2></div></div></div><p>
+Making proper usage of <span class="command"><strong>make2build</strong></span> is as easy as launching it in the directory of the 
+distribution which <code class="filename">Makefile.PL</code> you wish to convert.
+</p><p>For example:</p><div class="example"><a name="id1358"></a><p class="title"><b>Example 10. </b></p><div class="example-contents"><pre class="programlisting">
+% make2build
+</pre></div></div><br class="example-break"><p>
+But you may also provide the full path to the distribution, assuming for example you didn't <span class="command"><strong>cd</strong></span>
+directly into the distribution directory.
+</p><div class="example"><a name="id1359"></a><p class="title"><b>Example 11. </b></p><div class="example-contents"><pre class="programlisting">
+% make2build /path/to/HTML-Tagset*
+</pre></div></div><br class="example-break"><p>
+In both cases the <code class="filename">Makefile.PLs</code> will be converted and no output is generated since <span class="command"><strong>make2build
+</strong></span> acts quiet by default.
+</p></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Data section </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> make2build switches</td></tr></table></div></body></html>
