@@ -189,6 +189,65 @@ print $d->Dump;
 </sect1>
 
 <sect1>
+<title>CGI::Carp</title>
+
+<para>
+<command>CGI::Carp</command> is a module that redirects CGI script warnings and errors
+to the browser or a log, making debugging easier. Following examples are not exhaustive,
+but should provide a rough overview of <command>CGI::Carp</command>.
+</para>
+
+<para>Shows fatal errors in the browser:</para>
+
+<example>
+<title></title>
+<programlisting>
+use CGI::Carp qw(fatalsToBrowser);
+
+die "fatal error";
+</programlisting>
+</example>
+
+<para>Shows warnings in the browser:</para>
+
+<example>
+<title></title>
+<programlisting>
+use CGI::Carp qw(warningsToBrowser);
+
+warn "warning";
+</programlisting>
+</example>
+
+<para>Shows fatal errors and warnings in the browser:</para>
+
+<example>
+<title></title>
+<programlisting>
+use CGI::Carp qw(fatalsToBrowser warningsToBrowser);
+
+warn "warning";
+die "fatal error";
+</programlisting>
+</example>
+
+<para>Logs errors to a custom file:</para>
+
+<example>
+<title></title>
+<programlisting>
+use CGI::Carp qw(carpout);
+
+open my $fh, '>>', '/tmp/cgicarp.log' or die "Cannot open logfile: $!";
+carpout($fh);
+
+warn "redirected to logfile";
+</programlisting>
+</example>
+
+</sect1>
+
+<sect1>
 <title>built-in debugger alias <command>-d</command></title>
 
 <para>
