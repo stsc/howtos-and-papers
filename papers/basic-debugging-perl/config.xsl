@@ -10,4 +10,10 @@
   <xsl:param name="admon.graphics.path"></xsl:param>
   <xsl:param name="chunk.section.depth" select="0"></xsl:param>
   <xsl:param name="html.stylesheet" select="'basic-debugging-perl.css'"/>
+  <xsl:template name="user.head.content">
+    <xsl:param name="node" select="."/>
+    <link rel="icon"
+          href="favicon.ico"
+          type="image/x-icon"/>
+  </xsl:template>
 </xsl:stylesheet>
