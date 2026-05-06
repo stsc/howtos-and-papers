@@ -13,9 +13,28 @@
 <surname>Schubiger</surname>
 </author>
 </authorgroup>
+<pubdate>2026-05-06</pubdate>
+<abstract>
+<para>
+This article presents practical methods for debugging Perl programs,
+including diagnostic output and the built-in Perl debugger. It
+demonstrates how to inspect variables, trace program execution, and
+identify runtime errors in Perl applications.
+</para>
+</abstract>
+<keywordset>
+<keyword>Debugging</keyword>
+<keyword>Basic Debugging</keyword>
+<keyword>Perl</keyword>
+<keyword>Perl 5</keyword>
+<keyword>print statements</keyword>
+<keyword>Data::Dumper</keyword>
+<keyword>CGI::Carp</keyword>
+<keyword>built-in debugger alias -d</keyword>
+</keywordset>
 </articleinfo>
 
-<para>Copyright (c) 2005-2011, 2015-2016, 2024-2025 Steven Schubiger</para>
+<para>Copyright (c) 2005-2011, 2015-2016, 2024-2026 Steven Schubiger</para>
 <para>
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
